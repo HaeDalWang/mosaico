@@ -1,0 +1,31 @@
+# 실제 윈도우에서 설치와 실행 경로를 확인한다. 모델 파일은 저장소에 없으므로 검출 자체는 돌리지 않는다.
+name: windows
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install.bat (venv, pip, check.py가 모델 확인 단계까지 가는지)
+        shell: cmd
+        run: |
+          call install.bat > install.log 2>&1
+          type install.log
+          if not exist .venv\Scripts\python.exe exit /b 1
+          findstr /C:"[3/3]" install.log || exit /b 1
+          findstr /C:"civitai.com" install.log || exit /b 1
+      - name: test_workspace.py (한글 경로, 상태 분기, 배치 파일 형식)
+        shell: cmd
+        run: .venv\Scripts\python test_workspace.py
+      - name: run.bat (한글·공백·괄호 경로를 넘겨 run.py까지 도달하는지)
+        shell: cmd
+        run: |
+          .venv\Scripts\python -c "import numpy as np, mosaic, pathlib; d = pathlib.Path('그림 폴더 (1)'); d.mkdir(); assert mosaic.write_png(d / '사진 (1).png', np.full((64, 64, 3), 255, np.uint8))"
+          for /d %%D in (*1^)) do call run.bat "%%D" > run.log 2>&1
+          type run.log
+          findstr /C:"civitai.com" run.log || exit /b 1
