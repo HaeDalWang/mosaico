@@ -4,8 +4,17 @@
 
 ## 0. 받기
 
+### 에이전트에게 맡기기 (권장)
+
+1. 공유받은 모델 파일을 다운로드 폴더에 받아둔다.
+2. 평소 쓰던 에이전트를 열고 `처음_붙여넣을_말.md`의 상자 안 글을 그대로 붙여넣는다.
+
+내려받기, 모델 파일 넣기, 설치, 기존 작업과의 연결까지 에이전트가 한다.
+
+### 직접 하기
+
 1. https://github.com/HaeDalWang/mosaico 에서 초록색 **Code** 버튼 → **Download ZIP**을 눌러 받고 압축을 푼다.
-2. 모델 파일은 따로 받는다. https://civitai.com/models/1313556 에서 **v5.0**을 받아 압축을 풀고, 안에 있는 `ntd11_anime_nsfw_segm_v5.pt`를 이 폴더의 `models\v50\` 안에 넣는다. (Civitai 로그인과 성인 콘텐츠 표시 설정이 필요하다. `models`와 `v50` 폴더는 직접 만든다.)
+2. 공유받은 모델 파일을 `models\v50` 폴더에 넣는다. 이 폴더는 이미 만들어져 있다. zip 파일째로 넣어도 된다.
 
 ## 1. 가장 쉬운 방법
 
@@ -29,6 +38,7 @@ Python 3.12가 없으면 `install.bat`이 실패한다. [python.org](https://www
 ## 2. 폴더 구성
 
 ```
+├── 처음_붙여넣을_말.md        처음 한 번 에이전트에게 붙여넣는 글
 ├── AGENTS.md, CLAUDE.md      에이전트용 지시
 ├── install.bat, run.bat      윈도우 더블클릭용
 ├── setup_env.py              설치 (가상환경, 라이브러리, 점검)
@@ -37,12 +47,12 @@ Python 3.12가 없으면 `install.bat`이 실패한다. [python.org](https://www
 ├── test_workspace.py         자체 시험
 ├── measure.py                사람이 가린 전/후 쌍과 비교
 ├── requirements.txt
-├── models/v50/ntd11_anime_nsfw_segm_v5.pt
+├── models/v50/               공유받은 모델 파일을 넣는 곳
 ├── input/                    가릴 그림을 넣는 곳
 └── out/                      결과. 직접 확인이 필요한 것은 out/hold/
 ```
 
-모델 파일(`.pt`)은 저장소에 들어 있지 않다. 0번대로 따로 받는다. 그래픽카드는 필요 없다.
+모델 파일(`.pt`)은 저장소에 들어 있지 않고 따로 공유받는다. 그래픽카드는 필요 없다.
 
 ## 3. 터미널에서 직접 실행
 

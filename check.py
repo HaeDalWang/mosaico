@@ -51,11 +51,8 @@ def main() -> None:
         check_mosaic()
     except AssertionError as error:
         sys.exit(f"[실패] {error or '모자이크 계산이 예상과 다름'}")
-    if not run.MODEL_PATH.exists():
-        sys.exit(
-            f"[실패] 모델 파일이 없습니다: {run.MODEL_PATH}\n"
-            f"  {run.MODEL_URL} 에서 v5.0 을 받아 zip을 풀고, 안의 .pt 파일을 위 위치에 넣으세요."
-        )
+    if run.find_model() is None:
+        sys.exit(f"[실패] {run.MODEL_MISSING}")
     model = YOLO(str(run.MODEL_PATH))
     missing = run.TARGET_CLASSES - set(model.names.values())
     if missing:

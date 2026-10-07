@@ -1,9 +1,13 @@
 .venv/
 __pycache__/
 .DS_Store
-# 모델은 Civitai에서 따로 받는다 (README 0번)
-models/
+# 모델은 따로 전달한다. 폴더와 안내 파일만 저장소에 둔다
+models/**/*.pt
+models/**/*.zip
+/*.pt
+/*.zip
 # 사용자의 그림과 결과, 사용자별 설정
-input/
+input/*
+!input/여기에_그림을_넣으세요.txt
 out/
 작업환경.md

@@ -93,6 +93,39 @@ def test_summary_names_files_to_check() -> None:
     assert "b.png" in text and "c.png" in text and "a.png" not in text
 
 
+def test_find_model_forgives_mistakes() -> None:
+    """폴더명 오타, 다른 파일명, zip째로 넣기, 폴더 밖에 두기 모두 받아준다."""
+    import zipfile
+
+    def attempt(place) -> bool:
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            place(root)
+            originals = run.ROOT, run.MODEL_PATH
+            run.ROOT, run.MODEL_PATH = root, root / "models" / "v50" / "ntd11_anime_nsfw_segm_v5.pt"
+            try:
+                found = run.find_model()
+                return found is not None and found == run.MODEL_PATH and found.read_bytes() == b"weights"
+            finally:
+                run.ROOT, run.MODEL_PATH = originals
+
+    def typo_folder(root: Path) -> None:
+        (root / "models" / "V5O").mkdir(parents=True)
+        (root / "models" / "V5O" / "모델.pt").write_bytes(b"weights")
+
+    def zipped(root: Path) -> None:
+        (root / "models").mkdir()
+        with zipfile.ZipFile(root / "models" / "animeNSFWDetection_v50.zip", "w") as bundle:
+            bundle.writestr("ntd11_anime_nsfw_segm_v5.pt", b"weights")
+
+    def beside(root: Path) -> None:
+        (root / "ntd11_anime_nsfw_segm_v5 (1).pt").write_bytes(b"weights")
+
+    for place in (typo_folder, zipped, beside):
+        assert attempt(place), place.__name__
+    assert not attempt(lambda root: None), "모델이 없는데 찾았다고 함"
+
+
 def test_cp949_console() -> None:
     """윈도우 한국어 콘솔(cp949)이 못 찍는 글자가 파일명에 있어도 끝까지 돌아야 한다. 실제 모델을 쓴다."""
     if not run.MODEL_PATH.exists():
@@ -129,6 +162,7 @@ def main() -> None:
         test_expand_inputs,
         test_summary_names_files_to_check,
         test_bat_files,
+        test_find_model_forgives_mistakes,
         test_cp949_console,
     )
     for test in tests:

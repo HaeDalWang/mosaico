@@ -7,7 +7,9 @@
   아무것도 적지 않으면 input 폴더를 처리한다.
 """
 import glob
+import shutil
 import sys
+import zipfile
 from collections import Counter
 from pathlib import Path
 from typing import NamedTuple
@@ -135,6 +137,44 @@ def process(model: YOLO, image_path: Path) -> tuple[str, str]:
     return status, f"{out_path.name} | 가림 {mask.sum()}px | " + " | ".join(notes)
 
 
+def extract_model(archive: Path) -> Path | None:
+    """zip 안의 .pt 파일을 제자리에 꺼낸다."""
+    try:
+        with zipfile.ZipFile(archive) as bundle:
+            members = sorted(name for name in bundle.namelist() if name.lower().endswith(".pt"))
+            if not members:
+                return None
+            MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
+            MODEL_PATH.write_bytes(bundle.read(members[0]))
+    except (zipfile.BadZipFile, OSError):
+        return None
+    return MODEL_PATH
+
+
+def find_model() -> Path | None:
+    """모델 파일을 찾는다. 폴더명을 틀렸거나, 다른 이름이거나, zip째로 넣은 경우도 받아서 제자리에 둔다."""
+    if MODEL_PATH.exists():
+        return MODEL_PATH
+    models_dir = ROOT / "models"
+    loose = sorted(models_dir.rglob("*.pt")) + sorted(ROOT.glob("*.pt"))
+    if loose:
+        MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(loose[0], MODEL_PATH)
+        print(f"모델 파일을 {loose[0]} 에서 찾아 제자리에 복사했습니다.", flush=True)
+        return MODEL_PATH
+    for archive in sorted(models_dir.rglob("*.zip")) + sorted(ROOT.glob("*.zip")):
+        if extract_model(archive):
+            print(f"모델 파일을 {archive} 에서 꺼내 제자리에 두었습니다.", flush=True)
+            return MODEL_PATH
+    return None
+
+
+MODEL_MISSING = (
+    "모델 파일이 없습니다. 공유받은 모델 파일(.pt 또는 zip)을 이 폴더의 models 폴더 안에 넣어주세요.\n"
+    f"  직접 받으려면: {MODEL_URL} 의 v5.0"
+)
+
+
 def expand_inputs(args: list[str]) -> list[Path]:
     """폴더는 안의 이미지로, 와일드카드는 맞는 파일로 푼다. 윈도우 셸은 *.png 를 풀어주지 않는다."""
     paths = []
@@ -175,8 +215,8 @@ def main() -> None:
     paths = expand_inputs(args)
     if not paths:
         sys.exit(f"처리할 그림이 없습니다. {INPUT_DIR} 폴더에 그림을 넣거나, 그림 경로를 적어주세요.")
-    if not MODEL_PATH.exists():
-        sys.exit(f"모델 파일이 없습니다: {MODEL_PATH}\n  {MODEL_URL} 에서 v5.0 을 받아 zip 안의 .pt 파일을 위 위치에 넣으세요.")
+    if find_model() is None:
+        sys.exit(MODEL_MISSING)
     model = YOLO(str(MODEL_PATH))
     results = []
     for path in paths:
