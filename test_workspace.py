@@ -60,7 +60,7 @@ def test_state_machine() -> None:
         with tempfile.TemporaryDirectory() as folder:
             status, detail, out_dir, image = run_with_script(script, Path(folder))
             assert status == expected, (label, status, detail)
-            saved = sorted(str(p.relative_to(out_dir)) for p in out_dir.rglob("*.png")) if out_dir.exists() else []
+            saved = sorted(p.relative_to(out_dir).as_posix() for p in out_dir.rglob("*.png")) if out_dir.exists() else []
             assert saved == ([saved_as] if saved_as else []), (label, saved)
             if saved_as:
                 result = mosaic.read_image(out_dir / saved_as)
