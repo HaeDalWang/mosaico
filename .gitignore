@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+.DS_Store
+# 모델은 Civitai에서 따로 받는다 (README 0번)
+models/
+# 사용자의 그림과 결과, 사용자별 설정
+input/
+out/
+작업환경.md

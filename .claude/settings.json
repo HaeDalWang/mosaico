@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(.venv/bin/python run.py *)",
+      "Bash(.venv/bin/python run.py)",
+      "Bash(.venv/bin/python check.py)",
+      "Bash(.venv/bin/python test_workspace.py)",
+      "Bash(.venv/bin/python measure.py *)",
+      "Bash(.venv/Scripts/python run.py *)",
+      "Bash(.venv/Scripts/python run.py)",
+      "Bash(.venv/Scripts/python check.py)",
+      "Bash(.venv/Scripts/python test_workspace.py)",
+      "Bash(.venv/Scripts/python measure.py *)"
+    ]
+  }
+}
