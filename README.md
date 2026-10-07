@@ -137,6 +137,6 @@ py -3.12 setup_env.py
 |---|---|
 | Python 3.12가 없다고 나온다 | Python 설치 때 "Add python.exe to PATH"를 체크했는지. 다시 설치하면서 체크한다 |
 | `No module named 'ultralytics'` | `install.bat`을 끝까지 실행했는지. 터미널에서 직접 할 때는 `.venv\Scripts\python`으로 시작했는지 |
-| 모델 파일을 못 찾는다고 나온다 | `models\v50\ntd11_anime_nsfw_segm_v5.pt` 경로와 파일명이 정확한지 |
+| 모델 파일이 없다고 나온다 | 공유받은 모델 파일(`.pt` 또는 zip)이 `models` 폴더 안에 있는지 |
 | `처리할 이미지가 없습니다.` | 경로가 맞는지, 확장자가 png/jpg/jpeg/webp인지 |
 | 전부 `[검출 없음]`으로 나온다 | 흑백이나 만화풍 그림인지. 컬러 일러스트인데도 그러면 `ATTEMPTS` 첫 괄호의 0.25를 0.10으로 낮춰본다 |
